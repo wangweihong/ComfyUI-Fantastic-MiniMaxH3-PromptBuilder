@@ -315,6 +315,14 @@ it. A page reload starts clean.
 
 ## Saving and organising
 
+In a graph, convert **Fantastic H3 Create RefMod → name** to an input and
+connect a Text node, directly or through Format Text. For example, a role
+of `天使` with a format of `hd8_{a}` saves as `hd8_天使`. Linked values are
+checked once they are available, before source media is loaded. File and
+folder names preserve Unicode letters and numbers, including Chinese;
+empty names and existing names are still refused. This filename is
+separate from the optional **Subject name** used in prompts.
+
 Everything you create is saved automatically. Open **Browse library…** to
 see it all. **⤡ Size** at the library's top right sets its window and text
 size, and it's remembered for next time.
