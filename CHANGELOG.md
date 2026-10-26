@@ -3,6 +3,16 @@
 Every release of **ComfyUI Fantastic H3 Prompt Builder**, newest first. The
 [README](README.md) keeps the recent ones; everything older lives here.
 
+## Unreleased
+
+- **Dynamic RefMod names.** Create RefMod accepts names supplied by upstream
+  nodes without treating unresolved connections as empty names. Resolved
+  values are checked before loading source media; literal empty names,
+  metadata checks and ComfyUI's numeric limits remain enforced.
+- **Unicode RefMod filenames.** Chinese and other Unicode letters and
+  numbers are preserved when creating, finding and renaming RefMods.
+  Relative-path validation and existing-name protection remain in place.
+
 ## 1.8.3
 
 - **Subgraphs.** The Prompt Builder, the Text Encode's reference list, the

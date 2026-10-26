@@ -551,21 +551,26 @@ class MiniMaxH3FantasticRefModCreate:
         return float("nan")            # a save is a side effect: always run
 
     @classmethod
-    def VALIDATE_INPUTS(cls, name="", subfolder="", subject_name="", appearance="", voice_description="",
-                        retained_attributes=""):
-        # No **kwargs here on purpose: ComfyUI skips every input's min/max
-        # check for a node whose validator takes **kwargs, which is how a
-        # cleared "Voice seconds" box once reached the encoder as 0.
-        rel = "/".join(p for p in (sanitize_name(subfolder, folder=True), sanitize_name(name)) if p)
-        if not sanitize_name(name):
-            return "Give the RefMod a name."
-        if not valid_rel(rel):
-            return f"'{rel}' is not a valid RefMod name."
+    def VALIDATE_INPUTS(cls, name=None, subfolder=None, subject_name=None, appearance=None, voice_description=None,
+                        retained_attributes=None):
+        # Linked inputs are unavailable during preflight validation. None means
+        # unresolved; a literal empty string still fails the required name check.
+        # Keep an explicit signature so ComfyUI retains numeric range checks.
+        if name is not None:
+            clean = sanitize_name(name)
+            if not clean:
+                return "Give the RefMod a name."
+            if subfolder is not None:
+                rel = "/".join(p for p in (sanitize_name(subfolder, folder=True), clean) if p)
+                if not valid_rel(rel):
+                    return f"'{rel}' is not a valid RefMod name."
         try:
-            clean_subject_name(subject_name)
-            clean_description(appearance, "appearance")
-            clean_description(voice_description, "voice description")
-            clean_description(retained_attributes, "retained attributes")
+            if subject_name is not None:
+                clean_subject_name(subject_name)
+            for value, label in ((appearance, "appearance"), (voice_description, "voice description"),
+                                 (retained_attributes, "retained attributes")):
+                if value is not None:
+                    clean_description(value, label)
         except ValueError as exc:
             return str(exc)
         return True
@@ -575,6 +580,13 @@ class MiniMaxH3FantasticRefModCreate:
                description, write_preview, source, image=None, audio=None,
                vae=None, audio_vae=None, subject_name="", appearance="", voice_description="",
                retained_attributes=""):
+        # Recheck resolved linked values before loading source media or encoding.
+        validation = self.VALIDATE_INPUTS(
+            name=name if name is not None else "", subfolder=subfolder,
+            subject_name=subject_name, appearance=appearance,
+            voice_description=voice_description, retained_attributes=retained_attributes)
+        if validation is not True:
+            raise ValueError(validation)
         subject_name = clean_subject_name(subject_name)
         described = {"subject_name": subject_name,
                      "appearance": clean_description(appearance, "appearance"),

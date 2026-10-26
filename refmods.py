@@ -634,7 +634,9 @@ NODE_DISPLAY_NAME_MAPPINGS = {"MiniMaxH3RefModStack": "Fantastic H3 RefMod Stack
 # Names and curation (rename / describe / delete / preview)
 # --------------------------------------------------------------------------
 
-_NAME_OK = re.compile(r"[^A-Za-z0-9._ +()\-]+")
+# Keep Unicode letters and numbers in role names, including Chinese.
+# Separators, controls and other filesystem punctuation remain disallowed.
+_NAME_OK = re.compile(r"[^\w. +()\-]+")
 
 
 def sanitize_name(text, folder=False):
